@@ -84,8 +84,9 @@ Si el código encontrado contradice SPEC.md, la fuente es SPEC.md: actualizar SP
 
 ---
 
-## Estructura del código
+## Estructura del código (esperada)
 
+La estructura esperada algo como:
 ```
 src/
 ├── app.js             — Express, rutas, puntos de entrada
@@ -106,7 +107,7 @@ docs/
 └── [decisiones, notas, investigaciones]
 ```
 
-No duplicados. No versiones viejas. Si un archivo no se usa, borrarlo en un commit `chore: eliminar [archivo]` con justificación en el mensaje.
+**La verdad sale del código actual.** Cuando se ordene (Milestone 2), la estructura se ajusta a lo que tenga más sentido. La regla fija: no duplicados, no versiones viejas, si no se usa → se borra.
 
 ## Documentación relevante en /docs
 
