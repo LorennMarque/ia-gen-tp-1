@@ -84,8 +84,9 @@ Si el código encontrado contradice SPEC.md, la fuente es SPEC.md: actualizar SP
 
 ---
 
-## Estructura del código
+## Estructura del código (esperada)
 
+La estructura esperada algo como:
 ```
 src/
 ├── app.js             — Express, rutas, puntos de entrada
@@ -100,9 +101,23 @@ test/
 public/
 ├── index.html         — UI
 └── stats.html         — UI
+
+docs/
+├── [documentación relevante para el proyecto]
+└── [decisiones, notas, investigaciones]
 ```
 
-No duplicados. No versiones viejas. Si un archivo no se usa, borrarlo en un commit `chore: eliminar [archivo]` con justificación en el mensaje.
+**La verdad sale del código actual.** Cuando se ordene (Milestone 2), la estructura se ajusta a lo que tenga más sentido. La regla fija: no duplicados, no versiones viejas, si no se usa → se borra.
+
+## Documentación relevante en /docs
+
+Antes de empezar cualquier tarea, consultar `/docs`. Ahí va:
+- Decisiones de arquitectura o diseño
+- Notas sobre el código heredado
+- Investigaciones sobre comportamiento encontrado
+- Cualquier contexto que futura sesiones necesiten
+
+El agente debe leer y usar `/docs` como referencia de contexto. Si el contenido en `/docs` contradice lo que se observa en el código, el código es la verdad; actualizar `/docs` con lo encontrado.
 
 ---
 
