@@ -100,9 +100,23 @@ test/
 public/
 ├── index.html         — UI
 └── stats.html         — UI
+
+docs/
+├── [documentación relevante para el proyecto]
+└── [decisiones, notas, investigaciones]
 ```
 
 No duplicados. No versiones viejas. Si un archivo no se usa, borrarlo en un commit `chore: eliminar [archivo]` con justificación en el mensaje.
+
+## Documentación relevante en /docs
+
+Antes de empezar cualquier tarea, consultar `/docs`. Ahí va:
+- Decisiones de arquitectura o diseño
+- Notas sobre el código heredado
+- Investigaciones sobre comportamiento encontrado
+- Cualquier contexto que futura sesiones necesiten
+
+El agente debe leer y usar `/docs` como referencia de contexto. Si el contenido en `/docs` contradice lo que se observa en el código, el código es la verdad; actualizar `/docs` con lo encontrado.
 
 ---
 
