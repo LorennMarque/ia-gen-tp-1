@@ -7,7 +7,7 @@ const app = express();
 app.use(express.json());
 app.use(express.static(path.join(__dirname, '../public')));
 
-const DB_FILE = path.join(__dirname, '../links.json');
+const DB_FILE = path.join(__dirname, '../data/links.json');
 
 function leerLinks() {
   return JSON.parse(fs.readFileSync(DB_FILE, 'utf8'));

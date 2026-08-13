@@ -1,7 +1,7 @@
 node_modules/
 .env
 .env.local
-links.json
+data/links.json
 .DS_Store
 *.log
 coverage/
