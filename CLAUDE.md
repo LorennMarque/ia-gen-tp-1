@@ -112,10 +112,11 @@ docs/
 ## Documentación relevante en /docs
 
 Antes de empezar cualquier tarea, consultar `/docs`. Ahí va:
+- `PROGRESS.md` — checklist de milestones y estado actual del proyecto
 - Decisiones de arquitectura o diseño
 - Notas sobre el código heredado
 - Investigaciones sobre comportamiento encontrado
-- Cualquier contexto que futura sesiones necesiten
+- Cualquier contexto que futuras sesiones necesiten
 
 El agente debe leer y usar `/docs` como referencia de contexto. Si el contenido en `/docs` contradice lo que se observa en el código, el código es la verdad; actualizar `/docs` con lo encontrado.
 
