@@ -194,8 +194,17 @@ Si falta algo de esto, no está listo, aunque el código funcione localmente.
 
 ---
 
-## Cambios a este archivo
+## Documentación viva
 
-Si las reglas necesitan cambiar (porque algo no funciona, o el equipo decide algo nuevo):
-- Actualizar CLAUDE.md en un commit `docs: actualizar CLAUDE.md — [razón]`
-- El agente debe leer CLAUDE.md en cada sesión
+La documentación se actualiza en cada sesión con los avances reales:
+
+- **PROGRESS.md** — estado de milestones (qué está done, qué en progreso)
+- **SPEC.md** — comportamiento esperado (se actualiza si el entendimiento cambia)
+- **BUGS_FOUND.md** — bugs encontrados y prioridad
+- **corta/README.md** — instrucciones para correr Corta (si cambian)
+- **CLAUDE.md** — reglas y procesos (si algo no funciona o se decide lo contrario)
+- **README.md (raíz)** — estructura del proyecto (si hay cambios)
+
+Cada cambio en documentación es un commit `docs: [qué cambió]`.
+
+El agente debe leer toda la documentación relevante en cada sesión y mantenerla actualizada.
