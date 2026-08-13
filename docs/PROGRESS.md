@@ -3,7 +3,7 @@
 ## Milestones
 
 - [x] **Milestone 1:** Trackear desde el principio — histórico completo desde el caos original
-- [ ] **Milestone 2:** Ordenar — estructura clara, sin duplicados, README y .gitignore
+- [x] **Milestone 2:** Ordenar — estructura clara, sin duplicados, README y .gitignore
 - [ ] **Milestone 3:** Corregir errores — acortador funcional, redirects, estadísticas
 - [ ] **Milestone 4:** Completar — endpoint `/api/links/:codigo/stats` + stats.html integrado
 - [ ] **Milestone 5:** Producción — deploy en Railway, base de datos, URL pública
