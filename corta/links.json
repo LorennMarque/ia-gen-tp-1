@@ -46,5 +46,23 @@
     "url": "https://es.wikipedia.org/wiki/Acortador_de_URL",
     "clicks": 5,
     "creado": "2026-05-06T13:27:38.000Z"
+  },
+  {
+    "codigo": "96h",
+    "url": "https://www.google.com",
+    "clicks": 0,
+    "creado": "2026-08-13T22:17:14.361Z"
+  },
+  {
+    "codigo": "q04",
+    "url": "https://www.youtube.com/watch?v=1Ag5HiO6TbI",
+    "clicks": 0,
+    "creado": "2026-08-13T22:18:10.717Z"
+  },
+  {
+    "codigo": "scc",
+    "url": "http://localhost:3000/q04",
+    "clicks": 0,
+    "creado": "2026-08-13T22:18:58.422Z"
   }
 ]
