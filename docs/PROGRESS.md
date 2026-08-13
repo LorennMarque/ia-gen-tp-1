@@ -10,8 +10,8 @@
 
 ## Extras (opcionales)
 
-- [ ] **Trabajo en equipo**
+- [ ] **Trabajo en equipo** (en progreso)
   - [ ] Script base de monitoreo: `scripts/monitor-repo.sh`
   - [ ] Documentación: `docs/MONITORING.md`
   - [ ] Cada integrante configura su tarea programada en su máquina
-- [ ] **Memoria del agente** — skill `/collect-memory`, CLAUDE.md actualizado en cada sesión
+- [x] **Memoria del agente** — skill `/collect-memory` creada, CLAUDE.md documentado
