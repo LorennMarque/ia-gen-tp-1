@@ -208,3 +208,20 @@ La documentación se actualiza en cada sesión con los avances reales:
 Cada cambio en documentación es un commit `docs: [qué cambió]`.
 
 El agente debe leer toda la documentación relevante en cada sesión y mantenerla actualizada.
+
+---
+
+## Skill: /collect-memory
+
+**Cuándo:** al cerrar una sesión de trabajo.
+
+**Qué hace:**
+- Recopila qué se completó, qué quedó pendiente
+- Recopila decisiones tomadas durante la sesión
+- Recopila preferencias/reglas identificadas
+- Actualiza CLAUDE.md con una nueva sección `## Sesión [fecha]`
+- Hace commit: `docs: collect-memory sesión [fecha]`
+
+**Por qué:** futuras sesiones arrancen sabiendo qué está hecho y qué reglas rigen, sin repetir explicaciones.
+
+**Cómo:** `/collect-memory` y responde las tres preguntas que el agente hace.
