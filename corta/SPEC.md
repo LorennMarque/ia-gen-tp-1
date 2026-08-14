@@ -6,6 +6,18 @@ Acortador de URLs interno de la empresa. Recibe URLs largas, genera códigos cor
 
 ---
 
+## Errores (contrato unificado)
+
+Todas las respuestas de error de la API usan JSON:
+
+```json
+{ "error": "mensaje claro" }
+```
+
+Con el código HTTP correcto: `400`, `404`, `409` o `500`.
+
+---
+
 ## Endpoints
 
 ### POST /api/links
@@ -21,20 +33,29 @@ Acortar una nueva URL.
 **Respuesta 200:**
 ```json
 {
-  "codigo": "abc123",
-  "corta": "/abc123"
+  "codigo": "abc123xy",
+  "corta": "/abc123xy"
 }
 ```
 
-**Respuesta 400:** URL inválida (vacía, nula, sin protocolo http/https)
+**Respuesta 400:** URL inválida (vacía, nula, solo espacios, sin protocolo http/https, o formato inválido)
 
-**Respuesta 409:** Código generado ya existe para otra URL → reintentar generador
+**Respuesta 409:** Tras reintentar el generador N veces (N=5), no se obtuvo un código único
+
+**Respuesta 500:** Error de lectura/escritura de la base de datos
 
 **Comportamiento:**
 - Valida que la URL sea válida (protocolo http o https)
-- Genera un código único de 8 caracteres alfanuméricos
+- Genera un código único de 8 caracteres alfanuméricos (`a-z`, `0-9`)
+- Si el código ya existe, el servidor reintenta el generador hasta 5 veces
+- Si agota los reintentos, responde 409; el cliente puede reintentar el POST
 - Almacena: código, URL original, clicks=0, timestamp de creación
 - Devuelve el código y la ruta corta
+
+**Idempotencia:**
+- La misma URL en dos POST distintos genera **siempre un link nuevo** (no se deduplica por URL)
+- Cada acortado es un recurso independiente (tracking / campañas separadas)
+- La UI debe deshabilitar el botón mientras el request está en vuelo (anti doble-submit)
 
 ---
 
@@ -47,12 +68,15 @@ Redirigir a la URL original y registrar click.
 - Incrementa el contador de clicks
 - Persiste el cambio en la base de datos
 
-**Respuesta 404:** Código no existe
+**Respuesta 404:** Código no existe → `{ "error": "..." }`
+
+**Respuesta 500:** Error de lectura/escritura de la base de datos
 
 **Comportamiento:**
 - Busca el código en la base de datos
-- Si existe: incrementa clicks, devuelve 302 redirect
-- Si no existe: devuelve 404
+- Si existe: incrementa clicks, persiste, devuelve 302 redirect
+- Si no existe: devuelve 404 JSON
+- El side-effect de incrementar clicks está documentado (correcto para un shortener)
 
 ---
 
@@ -64,18 +88,21 @@ Obtener estadísticas de un link acortado.
 **Respuesta 200:**
 ```json
 {
-  "codigo": "abc123",
+  "codigo": "abc123xy",
   "url": "https://example.com/ruta/larga/muy/larga",
   "clicks": 42,
   "creado": "2026-08-13T22:17:14.361Z"
 }
 ```
 
-**Respuesta 404:** Código no existe
+**Respuesta 404:** Código no existe → `{ "error": "..." }`
+
+**Respuesta 500:** Error de lectura de la base de datos
 
 **Comportamiento:**
 - Busca el código en la base de datos
 - Devuelve: código, URL original, clicks totales, fecha de creación
+- No modifica clicks (lectura pura)
 
 ---
 
@@ -86,10 +113,11 @@ Página principal para acortar URLs.
 
 **Elementos esperados:**
 - Campo de entrada para URL
-- Botón "Acortar"
+- Botón "Acortar" (deshabilitado mientras el request está en vuelo)
 - Muestra el código generado
 - Muestra el link acortado (clickeable o opción copiar)
-- Maneja errores: URL inválida, error del servidor
+- Maneja errores: URL inválida (400), conflicto (409 con un reintento), error del servidor / red
+- En 409: reintenta el POST una vez; si vuelve a fallar, muestra el error
 
 ### public/stats.html
 Página de estadísticas.
@@ -99,6 +127,7 @@ Página de estadísticas.
 - Botón "Ver estadísticas"
 - Muestra: clicks, URL original, fecha de creación
 - Maneja 404: mensaje "Código no existe"
+- Maneja otros errores de forma visible
 
 ---
 
@@ -120,36 +149,46 @@ Formato esperado en base de datos:
 }
 ```
 
+**Inicialización:**
+- Si el directorio `data/` o el archivo `data/links.json` no existen, el servidor los crea con `[]`
+- Fallos de disco se responden con 500 JSON, sin tumbar el proceso
+
+**Concurrencia:**
+- Las mutaciones (crear link, incrementar clicks) se serializan para evitar pérdida por read-modify-write concurrente
+
 **Futuro (Milestone 5):** Migrar de archivo JSON a PostgreSQL en Railway.
 
 ---
 
 ## Validaciones
 
-- **URL vacía o nula:** rechazar con 400
-- **URL sin protocolo:** rechazar con 400 (debe ser http o https)
-- **Código duplicado:** devolver 409, cliente reintenta
-- **Código no existe:** devolver 404
+- **URL vacía, nula o solo espacios:** rechazar con 400
+- **URL sin protocolo http/https o formato inválido:** rechazar con 400
+- **Código duplicado tras N reintentos del generador:** devolver 409
+- **Código no existe:** devolver 404 JSON
 
 ---
 
 ## Casos borde
 
 ### Mismo código para dos URLs distintas
-El generador de códigos falla al crear un código que ya existe.
-- El endpoint devuelve 409 Conflict
-- El cliente reintenta `POST /api/links`
-- El servidor genera un nuevo código
+El generador produce un código que ya existe.
+- El servidor reintenta el generador hasta 5 veces
+- Si agota: 409 Conflict `{ "error": "..." }`
+- El cliente (UI) reintenta el POST una vez
+
+### Misma URL dos veces
+Dos POST con la misma URL → dos códigos distintos, dos links independientes.
 
 ### Código muy corto
 3 caracteres = ~46k combinaciones.
 Solución: usar 8 caracteres = ~2.8 trillones de combinaciones.
 
 ### URL inválida
-Sin protocolo, vacía, o formato inválido → 400 Bad Request.
+Sin protocolo, vacía, solo espacios, o formato inválido → 400 Bad Request.
 
 ### Link roto o eliminado
-Si se intenta acceder a un código que no existe → 404 Not Found.
+Si se intenta acceder a un código que no existe → 404 Not Found JSON.
 
 ---
 
@@ -164,13 +203,13 @@ Si se intenta acceder a un código que no existe → 404 Not Found.
 **Como administrador:**
 - Quiero saber qué links son más populares (ordenar por clicks)
 - Quiero ver cuándo se creó cada link
-- Quiero asegurar que no hay duplicados
+- Quiero asegurar que no hay códigos duplicados
 
 ---
 
 ## Notas
 
-- El generador debe criar códigos de 8 caracteres (no 3)
+- El generador debe crear códigos de 8 caracteres (no 3)
 - Todos los cambios (clicks, nuevos links) deben persistirse en la base de datos
-- Las URLs devueltas en redirects deben ser 302 Found (no 200)
-- Las estadísticas deben ser precisas (reflects real clicks)
+- Las URLs en redirects deben ser 302 Found (no 200)
+- Las estadísticas deben reflejar clicks reales persistidos
