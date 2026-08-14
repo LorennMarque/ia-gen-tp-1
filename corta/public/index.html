@@ -14,10 +14,13 @@
 
     <form id="form">
       <input type="url" id="url" placeholder="https://una-url-muy-larga..." required>
-      <button type="submit">Acortar</button>
+      <button type="submit" id="btn-acortar">Acortar</button>
     </form>
 
+    <p id="error" class="error oculto" role="alert"></p>
+
     <div id="resultado" class="oculto">
+      <p>Código: <strong id="codigo"></strong></p>
       <p>Tu link corto:</p>
       <a id="link-corto" href="#" target="_blank"></a>
       <button id="copiar" type="button">Copiar</button>
@@ -30,20 +33,63 @@
     const form = document.getElementById('form');
     const resultado = document.getElementById('resultado');
     const linkCorto = document.getElementById('link-corto');
+    const codigoEl = document.getElementById('codigo');
+    const errorEl = document.getElementById('error');
+    const btn = document.getElementById('btn-acortar');
 
-    form.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const url = document.getElementById('url').value;
+    function mostrarError(mensaje) {
+      errorEl.textContent = mensaje;
+      errorEl.classList.remove('oculto');
+      resultado.classList.add('oculto');
+    }
+
+    function limpiarError() {
+      errorEl.textContent = '';
+      errorEl.classList.add('oculto');
+    }
+
+    async function acortar(url, reintento) {
       const res = await fetch('/api/links', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ url })
       });
-      const data = await res.json();
-      const corta = window.location.origin + data.corta;
-      linkCorto.textContent = corta;
-      linkCorto.href = corta;
-      resultado.classList.remove('oculto');
+      let data = {};
+      try {
+        data = await res.json();
+      } catch (_) {
+        data = {};
+      }
+
+      if (res.status === 409 && !reintento) {
+        return acortar(url, true);
+      }
+
+      if (!res.ok) {
+        throw new Error(data.error || 'Error del servidor');
+      }
+
+      return data;
+    }
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      limpiarError();
+      btn.disabled = true;
+
+      try {
+        const url = document.getElementById('url').value;
+        const data = await acortar(url, false);
+        const corta = window.location.origin + data.corta;
+        codigoEl.textContent = data.codigo;
+        linkCorto.textContent = corta;
+        linkCorto.href = corta;
+        resultado.classList.remove('oculto');
+      } catch (err) {
+        mostrarError(err.message || 'No se pudo acortar la URL');
+      } finally {
+        btn.disabled = false;
+      }
     });
 
     document.getElementById('copiar').addEventListener('click', () => {
