@@ -2,6 +2,8 @@
 
 Acortador de URLs para uso interno de la empresa.
 
+Producción: https://corta-production-3c57.up.railway.app
+
 ## Qué hace
 
 - Recibe URLs largas
@@ -25,6 +27,8 @@ DATABASE_URL="postgres://usuario:clave@host:5432/corta" npm start
 ```
 
 En producción también se debe definir `NODE_ENV=production`. Si falta `DATABASE_URL`, la aplicación no inicia para evitar guardar datos en un filesystem efímero.
+
+El despliegue actual usa un servicio web y PostgreSQL dentro del mismo proyecto de Railway. `DATABASE_URL` es una referencia interna de Railway y ninguna credencial se guarda en el repositorio. Ver `../docs/DEPLOYMENT.md` para la configuración y la verificación operativa.
 
 ### UI
 

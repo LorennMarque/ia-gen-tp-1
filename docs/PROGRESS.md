@@ -6,7 +6,7 @@
 - [x] **Milestone 2:** Ordenar — estructura clara, sin duplicados, README y .gitignore
 - [x] **Milestone 3:** Corregir errores — acortador funcional, redirects, clicks persistidos, validación, códigos 8 chars
 - [x] **Milestone 4:** Completar — endpoint `/api/links/:codigo/stats` + stats.html / index.html integrados
-- [ ] **Milestone 5:** Producción — en progreso; código PostgreSQL listo, falta infraestructura, URL pública y prueba de redeploy
+- [x] **Milestone 5:** Producción — app pública en Railway, PostgreSQL y persistencia comprobada tras redeploy
 
 ## Auditoría y corrección (2026-08-14)
 
@@ -17,14 +17,18 @@ Corrección completa post-auditoría:
 
 Ver `BUGS_FOUND.md` (todos corregidos) y `TEST_PLAN.md`.
 
-## Milestone 5 — en progreso
+## Milestone 5 — completado (2026-08-15)
 
 - [x] Railway CLI autenticada y MCP local configurado en Codex
 - [x] PostgreSQL seleccionado mediante `DATABASE_URL`; JSON conservado para desarrollo
 - [x] Contrato de almacenamiento cubierto sobre JSON y PostgreSQL en memoria
-- [ ] Proyecto, servicio PostgreSQL y servicio web creados en Railway
-- [ ] Dominio público generado y smoke test completo
-- [ ] Links y clicks verificados después de un redeploy
+- [x] Proyecto, servicio PostgreSQL y servicio web creados en Railway mediante MCP
+- [x] Dominio público generado y smoke test completo
+- [x] Links, timestamp y clicks verificados después de un redeploy
+
+URL pública: https://corta-production-3c57.up.railway.app
+
+La evidencia operativa y la configuración se detallan en `DEPLOYMENT.md`.
 
 ## Extras (opcionales)
 

@@ -16,6 +16,7 @@ Llevar a producción **Corta**, el acortador de URLs interno heredado, con histo
 │
 ├── docs/               Documentación del proyecto
 │   ├── PROGRESS.md     Estado de milestones
+│   ├── DEPLOYMENT.md   Deploy y verificación de producción
 │   └── BUGS_FOUND.md   Bugs identificados y prioridad
 │
 ├── CLAUDE.md           Instrucciones para agentes/dev
@@ -39,3 +40,4 @@ Por eso:
 - **Código:** `corta/`
 - **Documentación:** `docs/`
 - **Especificación:** `corta/SPEC.md`
+- **Producción:** https://corta-production-3c57.up.railway.app

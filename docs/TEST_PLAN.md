@@ -8,7 +8,7 @@ Estrategia de testing. Los tests se derivan de `SPEC.md` (TDD).
 - **Chai** — assertions
 - **Supertest** — HTTP contra `createApp()` (sin servidor manual)
 - **pg-mem** — contrato PostgreSQL en memoria, sin credenciales ni servicio externo
-- Ubicación: `corta/test/test.js`
+- Ubicación: `corta/test/test.js` y `corta/test/db.test.js`
 - Ejecutar: `npm test` (en `/corta`)
 - Estado actual: **34 tests passing**
 
@@ -64,6 +64,20 @@ Estrategia de testing. Los tests se derivan de `SPEC.md` (TDD).
 - [x] La clave duplicada no reemplaza el link existente
 - [x] Los incrementos concurrentes no pierden clicks
 - [x] Los códigos inexistentes devuelven `null` al servidor
+
+## Verificación de producción
+
+El 2026-08-15 se ejecutó un smoke test contra Railway:
+
+- [x] La portada responde 200
+- [x] Crear un link válido responde 200
+- [x] Seguir el link responde 302 con el destino correcto
+- [x] Las estadísticas responden 200 y reflejan los clicks
+- [x] Una URL inválida responde 400 JSON
+- [x] Un código inexistente responde 404 JSON
+- [x] El mismo link conserva URL, timestamp y clicks después de un redeploy
+
+Esta verificación es operativa y complementa la suite automatizada. Ver `DEPLOYMENT.md`.
 
 ## Cómo correr
 
