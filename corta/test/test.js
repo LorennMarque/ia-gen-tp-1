@@ -261,6 +261,20 @@ describe('Corta', () => {
       expect(res.body).to.have.property('creado');
     });
 
+    it('devuelve creado como timestamp ISO8601 valido', async () => {
+      const creado = await request(app)
+        .post('/api/links')
+        .send({ url: 'https://example.com/timestamp' });
+
+      const res = await request(app).get(`/api/links/${creado.body.codigo}/stats`);
+      const timestamp = res.body.creado;
+
+      expect(res.status).to.equal(200);
+      expect(timestamp).to.be.a('string');
+      expect(timestamp).to.match(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/);
+      expect(new Date(timestamp).toISOString()).to.equal(timestamp);
+    });
+
     it('devuelve 404 JSON si el codigo no existe', async () => {
       const res = await request(app).get('/api/links/abcdefgh/stats');
       expect(res.status).to.equal(404);
