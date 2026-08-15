@@ -165,6 +165,29 @@ describe('Corta', () => {
       expect(segundo.status).to.equal(409);
       expect(segundo.body).to.have.property('error');
     });
+
+    it('POST /api/links concurrentes no pierden links', async () => {
+      let secuencia = 0;
+      generarCodigoFn = () => {
+        const codigo = secuencia.toString(36).padStart(8, '0');
+        secuencia += 1;
+        return codigo;
+      };
+
+      const cantidad = 20;
+      const respuestas = await Promise.all(
+        Array.from({ length: cantidad }, (_, indice) => (
+          request(app)
+            .post('/api/links')
+            .send({ url: `https://example.com/concurrente/${indice}` })
+        ))
+      );
+
+      expect(respuestas.every((res) => res.status === 200)).to.equal(true);
+      const links = JSON.parse(fs.readFileSync(dbFile, 'utf8'));
+      expect(links).to.have.length(cantidad);
+      expect(new Set(links.map((link) => link.codigo)).size).to.equal(cantidad);
+    });
   });
 
   describe('GET /:codigo', () => {
@@ -200,6 +223,24 @@ describe('Corta', () => {
       const res = await request(app).get('/noexiste').redirects(0);
       expect(res.status).to.equal(404);
       expect(res.body).to.have.property('error');
+    });
+
+    it('GET /:codigo concurrentes no pierden incrementos de clicks', async () => {
+      const creado = await request(app)
+        .post('/api/links')
+        .send({ url: 'https://example.com/clicks-concurrentes' });
+
+      const cantidad = 20;
+      const respuestas = await Promise.all(
+        Array.from({ length: cantidad }, () => (
+          request(app).get(creado.body.corta).redirects(0)
+        ))
+      );
+
+      expect(respuestas.every((res) => res.status === 302)).to.equal(true);
+      const links = JSON.parse(fs.readFileSync(dbFile, 'utf8'));
+      const link = links.find((item) => item.codigo === creado.body.codigo);
+      expect(link.clicks).to.equal(cantidad);
     });
   });
 
