@@ -13,7 +13,7 @@
 Corrección completa post-auditoría:
 - SPEC: idempotencia POST (siempre link nuevo), retry de código, errores JSON, init BD
 - Redirect 302, clicks persistidos, stats API + UI, validación URL, códigos 8
-- Cola de mutaciones + write atómico; tests con supertest (17 passing)
+- Cola de mutaciones + write atómico; tests con supertest (23 passing)
 
 Ver `BUGS_FOUND.md` (todos corregidos) y `TEST_PLAN.md`.
 

@@ -9,19 +9,20 @@ Estrategia de testing. Los tests se derivan de `SPEC.md` (TDD).
 - **Supertest** — HTTP contra `createApp()` (sin servidor manual)
 - Ubicación: `corta/test/test.js`
 - Ejecutar: `npm test` (en `/corta`)
+- Estado actual: **23 tests passing**
 
 ## Infra
 
 - `src/server.js` exporta `createApp` y `app`; `listen` solo si es entrypoint
-- Cada test usa un `dbFile` temporal aislado
+- Cada test usa un directorio temporal aislado
 - Cada test es independiente
 
 ## Cobertura (SPEC.md) — estado
 
 ### Persistencia / init
 
-- [x] Si falta `data/` o `links.json`, se inicializa con `[]`
-- [x] Fallos de I/O responden 500 JSON (handlers con try/catch)
+- [x] Si faltan `data/` y `links.json`, se crean y el archivo se inicializa con `[]`
+- [x] Fallos de I/O responden 500 JSON en POST, redirect y stats
 
 ### POST /api/links
 
@@ -40,8 +41,14 @@ Estrategia de testing. Los tests se derivan de `SPEC.md` (TDD).
 ### GET /api/links/:codigo/stats
 
 - [x] Devuelve `{codigo, url, clicks, creado}`
+- [x] `creado` es un timestamp ISO8601 válido y canónico
 - [x] Devuelve 404 JSON si código no existe
 - [x] No modifica clicks
+
+### Concurrencia
+
+- [x] POST concurrentes no pierden links ni generan códigos duplicados
+- [x] Redirects concurrentes no pierden incrementos de clicks
 
 ## Cómo correr
 
