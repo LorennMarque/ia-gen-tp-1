@@ -133,13 +133,19 @@ Página de estadísticas.
 
 ## Almacenamiento
 
+### Selección por entorno
+
+- Si existe `DATABASE_URL`, la aplicación usa PostgreSQL
+- Si no existe `DATABASE_URL` y `NODE_ENV` no es `production`, usa el archivo JSON local
+- Si `NODE_ENV=production` y falta `DATABASE_URL`, la aplicación no inicia; producción nunca cae silenciosamente al archivo efímero
+
 Los links se almacenan con:
 - `codigo`: identificador único (8 caracteres)
 - `url`: URL original completa
 - `clicks`: número de accesos (inicia en 0)
 - `creado`: timestamp ISO8601 de creación
 
-Formato esperado en base de datos:
+Formato lógico esperado en cualquier almacenamiento:
 ```json
 {
   "codigo": "abc123xy",
@@ -149,14 +155,25 @@ Formato esperado en base de datos:
 }
 ```
 
-**Inicialización:**
+**JSON local:**
 - Si el directorio `data/` o el archivo `data/links.json` no existen, el servidor los crea con `[]`
 - Fallos de disco se responden con 500 JSON, sin tumbar el proceso
 
+**PostgreSQL:**
+- Al iniciar, crea la tabla `links` si todavía no existe
+- `codigo` es clave primaria y evita códigos duplicados aun con requests concurrentes
+- Los campos persistidos son `codigo`, `url`, `clicks` y `creado`
+- El incremento de clicks es una actualización atómica
+- Fallos de conexión o queries se responden con 500 JSON, sin exponer credenciales
+
 **Concurrencia:**
 - Las mutaciones (crear link, incrementar clicks) se serializan para evitar pérdida por read-modify-write concurrente
+- En PostgreSQL, la clave primaria y las actualizaciones atómicas mantienen esta garantía entre procesos
 
-**Futuro (Milestone 5):** Migrar de archivo JSON a PostgreSQL en Railway.
+**Producción (Milestone 5):**
+- Railway provee `DATABASE_URL` mediante una variable de referencia al servicio PostgreSQL
+- Los links y sus clicks sobreviven al reinicio o redeploy del servicio web
+- Las credenciales viven únicamente en variables de entorno y nunca se escriben en el repositorio
 
 ---
 
