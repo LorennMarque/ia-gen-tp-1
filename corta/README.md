@@ -48,7 +48,7 @@ corta/
 
 - **Framework:** Express.js
 - **Base de datos:** JSON local (futuro: PostgreSQL en Railway)
-- **Node.js:** v14+
+- **Node.js:** `^18.18.0`, `^20.9.0` o `>=21.1.0` (requisito de Mocha 11)
 
 ## Desarrollo
 
