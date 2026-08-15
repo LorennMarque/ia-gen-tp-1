@@ -3,6 +3,10 @@
 ## La misión
 Llevar Corta a producción con historia limpia en GitHub, documentación TDD-first, y código listo para equipo. Del caos del primer commit a una app que funciona en Railway.
 
+## Sincronización de instrucciones
+
+`AGENTS.md` y `CLAUDE.md` deben mantener las mismas reglas del proyecto. Todo cambio realizado en uno debe reflejarse en el otro dentro del mismo commit; únicamente puede diferir el título del archivo.
+
 ## Antes de empezar: el agente espera instrucciones
 
 El agente NO asume, NO propone features, NO refactoriza sin permiso explícito.
@@ -222,6 +226,6 @@ El agente debe leer toda la documentación relevante en cada sesión y mantenerl
 - Actualiza CLAUDE.md con una nueva sección `## Sesión [fecha]`
 - Hace commit: `docs: collect-memory sesión [fecha]`
 
-**Por qué:** futuras sesiones arrancen sabiendo qué está hecho y qué reglas rigen, sin repetir explicaciones.
+**Por qué:** futuras sesiones arranquen sabiendo qué está hecho y qué reglas rigen, sin repetir explicaciones.
 
 **Cómo:** `/collect-memory` y responde las tres preguntas que el agente hace.
