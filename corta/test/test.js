@@ -7,12 +7,14 @@ const { createApp } = require('../src/server');
 const { generarCodigo } = require('../src/utils');
 
 describe('Corta', () => {
+  let tempDir;
   let dbFile;
   let app;
   let generarCodigoFn;
 
   beforeEach(() => {
-    dbFile = path.join(os.tmpdir(), `corta-test-${Date.now()}-${Math.random()}.json`);
+    tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'corta-test-'));
+    dbFile = path.join(tempDir, 'data', 'links.json');
     generarCodigoFn = generarCodigo;
     app = createApp({
       dbFile,
@@ -21,20 +23,57 @@ describe('Corta', () => {
   });
 
   afterEach(() => {
-    if (fs.existsSync(dbFile)) fs.unlinkSync(dbFile);
+    fs.rmSync(tempDir, { recursive: true, force: true });
   });
 
   describe('persistencia / init', () => {
-    it('inicializa links.json con [] si el archivo no existe', async () => {
+    function crearAppConFalloDeIo() {
+      const archivoEnLugarDeDirectorio = path.join(tempDir, 'ruta-bloqueada');
+      fs.writeFileSync(archivoEnLugarDeDirectorio, 'no es un directorio');
+      return createApp({
+        dbFile: path.join(archivoEnLugarDeDirectorio, 'links.json'),
+        generarCodigo
+      });
+    }
+
+    it('crea data/ y links.json con [] si no existen', async () => {
+      const dbDir = path.dirname(dbFile);
+      expect(fs.existsSync(dbDir)).to.equal(false);
       expect(fs.existsSync(dbFile)).to.equal(false);
-      const res = await request(app)
-        .post('/api/links')
-        .send({ url: 'https://example.com' });
-      expect(res.status).to.equal(200);
+
+      const res = await request(app).get('/noexiste').redirects(0);
+
+      expect(res.status).to.equal(404);
+      expect(fs.existsSync(dbDir)).to.equal(true);
       expect(fs.existsSync(dbFile)).to.equal(true);
       const data = JSON.parse(fs.readFileSync(dbFile, 'utf8'));
-      expect(data).to.be.an('array');
-      expect(data).to.have.length(1);
+      expect(data).to.deep.equal([]);
+    });
+
+    it('POST /api/links devuelve 500 JSON ante un fallo de almacenamiento', async () => {
+      const appConFallo = crearAppConFalloDeIo();
+      const res = await request(appConFallo)
+        .post('/api/links')
+        .send({ url: 'https://example.com' });
+
+      expect(res.status).to.equal(500);
+      expect(res.body).to.have.property('error');
+    });
+
+    it('GET /:codigo devuelve 500 JSON ante un fallo de almacenamiento', async () => {
+      const appConFallo = crearAppConFalloDeIo();
+      const res = await request(appConFallo).get('/abcdefgh').redirects(0);
+
+      expect(res.status).to.equal(500);
+      expect(res.body).to.have.property('error');
+    });
+
+    it('GET /api/links/:codigo/stats devuelve 500 JSON ante un fallo de almacenamiento', async () => {
+      const appConFallo = crearAppConFalloDeIo();
+      const res = await request(appConFallo).get('/api/links/abcdefgh/stats');
+
+      expect(res.status).to.equal(500);
+      expect(res.body).to.have.property('error');
     });
   });
 
