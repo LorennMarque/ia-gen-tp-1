@@ -7,15 +7,17 @@ Estrategia de testing. Los tests se derivan de `SPEC.md` (TDD).
 - **Mocha** — test runner
 - **Chai** — assertions
 - **Supertest** — HTTP contra `createApp()` (sin servidor manual)
+- **pg-mem** — contrato PostgreSQL en memoria, sin credenciales ni servicio externo
 - Ubicación: `corta/test/test.js`
 - Ejecutar: `npm test` (en `/corta`)
-- Estado actual: **23 tests passing**
+- Estado actual: **34 tests passing**
 
 ## Infra
 
 - `src/server.js` exporta `createApp` y `app`; `listen` solo si es entrypoint
 - Cada test usa un directorio temporal aislado
 - Cada test es independiente
+- Los mismos comportamientos de persistencia se verifican sobre JSON y PostgreSQL
 
 ## Cobertura (SPEC.md) — estado
 
@@ -49,6 +51,19 @@ Estrategia de testing. Los tests se derivan de `SPEC.md` (TDD).
 
 - [x] POST concurrentes no pierden links ni generan códigos duplicados
 - [x] Redirects concurrentes no pierden incrementos de clicks
+
+### Selección de almacenamiento
+
+- [x] Desarrollo sin `DATABASE_URL` usa JSON local
+- [x] Con `DATABASE_URL` usa PostgreSQL
+- [x] Producción sin `DATABASE_URL` rechaza el arranque
+
+### Contrato JSON / PostgreSQL
+
+- [x] Crea y consulta links con el mismo formato lógico
+- [x] La clave duplicada no reemplaza el link existente
+- [x] Los incrementos concurrentes no pierden clicks
+- [x] Los códigos inexistentes devuelven `null` al servidor
 
 ## Cómo correr
 

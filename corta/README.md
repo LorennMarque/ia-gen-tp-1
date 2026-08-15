@@ -18,6 +18,14 @@ npm start
 
 El servidor escucha en `http://localhost:3000`.
 
+Sin `DATABASE_URL`, desarrollo usa `data/links.json`. Para usar PostgreSQL:
+
+```bash
+DATABASE_URL="postgres://usuario:clave@host:5432/corta" npm start
+```
+
+En producción también se debe definir `NODE_ENV=production`. Si falta `DATABASE_URL`, la aplicación no inicia para evitar guardar datos en un filesystem efímero.
+
 ### UI
 
 - **Acortar:** `http://localhost:3000/` — formulario para crear links cortos
@@ -37,7 +45,7 @@ Ver `SPEC.md` para especificación completa de endpoints.
 
 ```
 corta/
-├── src/              # Código servidor
+├── src/              # Servidor y adaptadores de almacenamiento
 ├── test/             # Tests
 ├── public/           # UI (HTML, CSS, assets)
 ├── SPEC.md           # Especificación de comportamiento
@@ -47,11 +55,19 @@ corta/
 ## Stack
 
 - **Framework:** Express.js
-- **Base de datos:** JSON local (futuro: PostgreSQL en Railway)
+- **Base de datos:** JSON local; PostgreSQL cuando existe `DATABASE_URL`
 - **Node.js:** `^18.18.0`, `^20.9.0` o `>=21.1.0` (requisito de Mocha 11)
 
 ## Desarrollo
 
 Leer `SPEC.md` para entender qué debe hacer cada endpoint.
+
+Ejecutar los tests:
+
+```bash
+npm test
+```
+
+La suite usa bases temporales para JSON y `pg-mem` para PostgreSQL; no requiere servicios externos.
 
 Bugs conocidos: ver `/docs/BUGS_FOUND.md`.
