@@ -17,6 +17,8 @@ Llevar a producción **Corta**, el acortador de URLs interno heredado, con histo
 ├── docs/               Documentación del proyecto
 │   ├── PROGRESS.md     Estado de milestones
 │   ├── DEPLOYMENT.md   Deploy y verificación de producción
+│   ├── github-mcp.md   GitHub MCP para Claude Code y Codex
+│   ├── railway-mcp.md  Railway MCP para Claude Code y Codex
 │   └── BUGS_FOUND.md   Bugs identificados y prioridad
 │
 ├── CLAUDE.md           Instrucciones para agentes/dev
